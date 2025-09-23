@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:quiz_app/answer_button.dart';
 import 'package:quiz_app/data/questions.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:quiz_app/progress_bar.dart';
+import 'package:quiz_app/score.dart';
 
 class QuestionsScreen extends StatefulWidget {
   const QuestionsScreen({super.key, required this.onSelectAnswer});
@@ -16,10 +18,14 @@ class QuestionsScreen extends StatefulWidget {
 
 class _QuestionsScreenState extends State<QuestionsScreen> {
   var currentQuestionIndex = 0;
+  var correctAnswers = 0;
 
   void answerQuestion(String selectedAnswer) {
     widget.onSelectAnswer(selectedAnswer);
     setState(() {
+      if (selectedAnswer == questions[currentQuestionIndex].answers[0]) {
+        correctAnswers++;
+      }
       currentQuestionIndex++;
     });
   }
@@ -27,6 +33,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   @override
   Widget build(BuildContext context) {
     final currentQuestion = questions[currentQuestionIndex];
+    int totalQuestions = questions.length;
+    int questionsAnswered = currentQuestionIndex;
 
     return SizedBox(
       width: double.infinity,
@@ -36,6 +44,15 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            ProgressBar(questions: totalQuestions, answered: questionsAnswered),
+            const SizedBox(height: 30),
+            Center(
+              child: Score(
+                questionsRight: correctAnswers,
+                answeredQuestions: questionsAnswered,
+              ),
+            ),
+            const SizedBox(height: 30),
             Text(
               textAlign: TextAlign.center,
               currentQuestion.text,
